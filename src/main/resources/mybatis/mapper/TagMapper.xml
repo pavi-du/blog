@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pavi.blog.mapper.TagMapper">
+
+    <!--List<Tag> listTag();;-->
+    <resultMap id="iTag" type="com.pavi.blog.po.Tag">
+        <id column="id" property="id"></id>
+        <result column="tagname" property="tagName"></result>
+    </resultMap>
+
+    <resultMap id="tagWithBlog" type="com.pavi.blog.po.Tag">
+        <id column="tid" property="id"></id>
+        <result column="ttagname" property="tagName"></result>
+        <collection property="blogList" ofType="com.pavi.blog.po.Blog" fetchType="lazy">
+            <id column="bid" property="id"></id>
+        </collection>
+    </resultMap>
+
+    <!--Integer saveTag(Tag tag);-->
+    <insert id="saveTag">
+        INSERT INTO tag(tagName)
+        VALUES(#{tagName});
+    </insert>
+
+
+    <!--Integer deleteTagById(Long id);-->
+    <delete id="deleteTagById">
+        DELETE FROM tag
+        WHERE id=#{id}
+    </delete>
+
+    <!--Integer updateTagById(Tag tag);-->
+    <update id="updateTagById">
+        UPDATE tag
+        set tagName = #{tagName}
+        where id = #{id}
+    </update>
+
+    <select id="listTagWithBlog" resultMap="tagWithBlog">
+        select t.id tid,t.tagname ttagname,b.id bid from tag t
+        left JOIN blogtag bt
+        on t.id =  bt.tagid
+        LEFT JOIN blog b
+        on bt.blogid = b.id
+    </select>
+
+    <select id="listTag" resultType="com.pavi.blog.po.Tag">
+        select id ,tagname
+        from tag
+    </select>
+
+    <!--Tag getTagById(Long id);-->
+    <select id="getTagById" resultType="com.pavi.blog.po.Tag">
+        SELECT id,tagName FROM tag
+        WHERE id = #{id}
+    </select>
+
+    
+    
+    
+
+
+</mapper>

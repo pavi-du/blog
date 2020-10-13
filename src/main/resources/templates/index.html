@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css" th:href="@{https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css}" >
+    <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css}" >
+</head>
+<body>
+<nav class="attached segment m-padded-tb-mini m-shadow-small">
+    <div class="ui container">
+        <div class="ui secondary menu">
+            <h2 class="ui teal header item">Matt</h2>
+            <a href="#" th:href="@{/}" class="active teal item m-mobile-hide"><i class=" home icon"></i>首页</a>
+            <a href="#" th:href="@{/types/1/5}" class="m-item item m-mobile-hide"><i class="idea icon"></i>分类</a>
+            <a href="#" th:href="@{/tags/1/5}" class="m-item item m-mobile-hide"><i class="tags icon"></i>标签</a>
+            <a href="#" th:href="@{/arichives}" class="m-item item m-mobile-hide"><i class="clone icon"></i>归档</a>
+            <a href="#" th:href="@{/admin/index}" class="m-item item m-mobile-hide"><i class="edit outline icon"></i>编辑博客</a>
+            <a href="#" th:href="@{/about}" class="m-item item m-mobile-hide"><i class="info icon"></i>关于我</a>
+
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui icon input">
+                        <input type="text" name="search" placeholder="搜索..." >
+                        <i class="search link icon" id="search"></i>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+<!--中间内容-->
+<div class="m-container m-padded-tb-big">
+    <div class="ui container">
+        <div class="ui stackable grid">
+            <!--左边博客列表-->
+            <div class="eleven wide column">
+                <!--header-->
+                <div class="ui top attached segment">
+                    <div class="ui middle aligned two column grid">
+                        <div class="column">
+                            <h3 class="ui teal header">博客</h3>
+                        </div>
+                        <div class="right aligned column">
+                            共 <h2 class="ui orange header m-inline-block m-text-thin" th:text="${blogPageInfo.size}">  </h2> 篇
+                        </div>
+                    </div>
+                </div>
+
+                <!--content-->
+                <div class="ui attached  segment">
+
+                    <div th:each="blog:${blogPageInfo.list}" class="ui padded vertical segment m-padded-tb-large">
+                        <div class="ui mobile reversed stackable grid">
+                            <div class="eleven wide column">
+                                <a th:href="@{/blog/}+${blog.id}">
+                                    <h3 class="ui header" th:text="${blog.title}">
+                                        你真的理解什么是财富自由吗？
+                                    </h3>
+
+                                </a>
+                                <p class="m-text" th:text="${blog.description}">
+                                    正确做好任何一件事情的前提是清晰、正确的理解目标。而事实是
+                                </p>
+                                <div class="ui grid">
+                                    <div class="eleven wide column">
+                                        <div class="ui mini horizontal link list">
+                                            <div class="item">
+                                                <img src="https://unsplash.it/100/100?image=1005" alt=""
+                                                     class="ui avatar image" th:src="@{${blog.user.avatar}}">
+                                                <div class="content"><a href="#" class="header" th:text="${blog.user.nickName}">matt</a></div>
+                                            </div>
+                                            <div class="item">
+                                                <i class="calendar icon"></i> [[${#dates.format(blog.updateTime,'yyyy-MM-dd hh-mm-ss')}]]
+                                            </div>
+                                            <div class="item">
+                                                <i class="eye icon"></i> [[${blog.views}]]
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="right aligned five wide column">
+                                        <a href="#" target="_blank"
+                                           class="ui teal basic label m-padded-tiny m-text-thin" th:text="${blog.flag}">认知升级</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="five wide column">
+                                <a href="#" th:href="@{/blog/}+${blog.id}" target="_blank">
+                                    <img src="https://unsplash.it/800/450?image=1005" th:src="@{${blog.firstPicture}}" alt="" class="ui middle aligned small rounded  image">
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+
+                <!--footer-->
+                <div class="ui bottom attached segment">
+                    <div class="ui middle aligned two column grid">
+
+
+
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!--右边的top-->
+            <div class="five wide column">
+
+                <!--分类-->
+                <div class="ui segments">
+                    <div class="ui secondary segment">
+                        <div class="ui two column grid">
+                            <div class="column">
+                                <i class="idea icon"></i>分类
+                            </div>
+                            <div class="right aligned column">
+                                <a href="#" th:href="@{/types/}+${blogPageInfo.pageNum+1}+'/5'" >more <i class="angle double right icon"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui teal segment">
+                        <div class="ui fluid vertical menu">
+                            <a th:each="type:${types}" href="#" th:href="@{/types/}+${type.id}+'/'+${blogPageInfo.pageNum+1}+'/5'"   class="item">
+                               [[${type.typeName}]]
+                                <div class="ui teal basic left pointing label" th:text="${type.blogList.size()}">13</div>
+                            </a>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <!--标签-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment">
+                        <div class="ui two column grid">
+                            <div class="column">
+                                <i class="tags icon"></i>标签
+                            </div>
+                            <div class="right aligned column">
+                                <a href="#" th:href="@{/tags/1/5}" >more <i class="angle double right icon"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui teal segment">
+                        <a href="#" th:href="@{/tags/}+${tag.id}+'/1/5'" th:each="tag:${tags}"  class="ui teal basic left pointing label m-margin-tb-tiny">
+                            [[${tag.tagName}]]
+                            <div class="detail" th:text="${tag.blogList.size()}">23</div>
+                        </a>
+
+
+                    </div>
+                </div>
+
+                <!--最新推荐-->
+                <div class="ui segments m-margin-top-large">
+                    <div class="ui secondary segment ">
+                        <i class="bookmark icon"></i>最新推荐
+                    </div>
+                    <div class="ui segment recommendLatest">
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<br>
+<br>
+
+
+<!--底部footer-->
+<footer class="ui inverted vertical segment m-padded-tb-massive">
+    <div class="ui center aligned container">
+        <div class="ui inverted divided stackable grid">
+            <div class="three wide column">
+
+            </div>
+            <div class="three wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced " >最新博客</h4>
+                <div class="ui inverted link list footerLatestBlog">
+
+                </div>
+            </div>
+            <div class="three wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced ">联系我</h4>
+                <div class="ui inverted link list">
+                    <a href="mailto:dumingxuancn@foxmail.com" class="item m-text-thin">Email：dumingxuancn@foxmail.com</a>
+                    <a href="tencent://message/?uin=1718905040&Site=&Menu=yes" class="item m-text-thin">QQ：1718905040</a>
+                </div>
+            </div>
+            <div class="seven wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced ">Blog</h4>
+                <p class="m-text-thin m-text-spaced m-opacity-mini">这是我的个人博客、会记录学习过程出现的问题，希望可以给来到这儿的人有所帮助...</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <p class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2020 - 2020 Matt Designed by Matt</p>
+    </div>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js" th:src="@{https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js}" ></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" th:src="@{https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js}"></script>
+<script th:inline="javascript">
+
+
+    $(function () {
+        $('.menu.toggle').click(function () {
+            $('.m-item').toggleClass('m-mobile-hide');
+        });
+
+        /*<![CDATA[*/
+            var listLatestBlogUrl = [[@{/blogs/latest/3}]];
+            var toBlogPage = [[@{/blog/}]];
+            var initRecommendLatestUrl = [[@{/blogs/recommendLatest/5}]]
+
+        $.ajax({
+            type: "GET",
+            url: listLatestBlogUrl,
+            success: function(res){
+
+                var a = '<a href="#" class="item m-text-thin"></a>';
+                var blogList = res.data.newBlogList;
+                var i = 0;
+                for(i;i<res.data.newBlogList.length;i++){
+                    $('.footerLatestBlog').append($(a).attr("href",toBlogPage+blogList[i].id)
+                        .text(blogList[i].title));
+                }
+                initRecommendLatest();
+            }
+        });
+
+        function initRecommendLatest() {
+
+            $.ajax({
+                type: "GET",
+                url: initRecommendLatestUrl,
+                success: function(res){
+
+                    var a = '<a  class="m-black m-text-thin"></a>';
+                    var blogList = res.data.blogListRecommendLatest;
+                    console.log(blogList);
+                    var i = 0;
+                    for(i=0;i<blogList.length;i++){
+                        $('.recommendLatest').append($(a).attr("href",toBlogPage+blogList[i].id)
+                            .text(blogList[i].title)).append('<br/>');
+                    }
+                }
+            });
+
+
+
+        }
+
+        $('#search').click(function () {
+            var search = $('[name="search"]').val();
+            window.location.href="/search/1/5?search="+search;
+
+        });
+
+
+    });
+</script>
+
+</body>
+
+
+</html>

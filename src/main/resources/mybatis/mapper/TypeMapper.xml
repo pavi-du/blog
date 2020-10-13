@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pavi.blog.mapper.TypeMapper">
+
+
+    <!--void saveType(Type type);-->
+    <insert id="saveType">
+        insert into type(`typename`)
+        values(#{typeName});
+    </insert>
+
+
+    <!--void removeTypeById(Long id);-->
+    <delete id="removeTypeById">
+        delete from type where id = #{id}
+    </delete>
+
+
+    <!--void updateType(Type type);-->
+    <update id="updateTypeById">
+        update type
+        set TYPENAME = #{typeName}
+        where id = #{id}
+    </update>
+
+
+    <resultMap id="typeWithBlog" type="com.pavi.blog.po.Type">
+        <id column="tid" property="id"></id>
+        <result column="typename" property="typeName"></result>
+        <collection property="blogList" ofType="com.pavi.blog.po.Blog">
+            <id column="bid" property="id"></id>
+        </collection>
+    </resultMap>
+
+    <!--select id,TYPENAME from type;
+    List<Type> listTypeWithBlog();-->
+    <select id="listTypeWithBlog" resultMap="typeWithBlog">
+        select t.id tid,TYPENAME,b.id bid from type t
+        left join blog b
+        on t.id = b.typeid
+        ORDER BY typename ASC
+    </select>
+
+    <!--List<Type> listType();-->
+    <select id="listType" resultType="com.pavi.blog.po.Type">
+        SELECT id,typeName
+        FROM type
+    </select>
+
+    <!--Type getTypeById(Long id);-->
+    <select id="getTypeById" resultType="com.pavi.blog.po.Type">
+        select id,TYPENAME
+        from type
+        where id = #{id}
+    </select>
+
+
+</mapper>

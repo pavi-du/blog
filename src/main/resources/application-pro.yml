@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://123.56.135.43:3306/blog?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+mybatis:
+  config-location: classpath:/mybatis/mybatis-config.xml
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+logging:
+  level:
+    root: info
+    com.pavi: error
+  file: log/blog-dev.log
+
+server:
+  port: 9000
+
+

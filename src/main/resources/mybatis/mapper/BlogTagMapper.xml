@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pavi.blog.mapper.BlogTagMapper">
+
+
+    <!--void saveTagBlog(@Param("blogId") Long blogId, List<Long> tagIds);;-->
+    <insert id="saveTagBlog">
+        insert into blogtag(blogId,tagid)
+        values
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{blogId},#{tagId})
+        </foreach>
+    </insert>
+
+    <!--void deleteTagByBlogId(Long id);-->
+    <delete id="deleteTagByBlogId">
+        DELETE FROM blogtag
+        WHERE BLOGID = #{blogId};
+    </delete>
+
+
+
+    <resultMap id="blogTagWithTag" type="com.pavi.blog.po.BlogTag">
+        <id column="id" property="id"></id>
+        <association property="tag" select="com.pavi.blog.mapper.TagMapper.getTagById" column="TAGID"></association>
+    </resultMap>
+
+    <!--List<BlogTag> getBlogTagByBlogId(Long id);-->
+    <select id="getBlogTagByBlogId" resultMap="blogTagWithTag">
+
+        SELECT id,BLOGID,TAGID from blogtag
+        where BLOGID = #{blogId}
+    </select>
+
+    <!--List<BlogTag> getBlogTagByBlogIdWithTag(Long id);-->
+    <select id="getBlogTagByBlogIdWithTag" resultMap="blogTagWithTag">
+
+        SELECT id,blogId,tagId from blogtag
+        where BLOGID = #{blogId}
+    </select>
+</mapper>

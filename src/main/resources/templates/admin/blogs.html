@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+    <link rel="stylesheet" href="../../static/css/me.css" th:href="@{/css/me.css}">
+</head>
+<body >
+
+<!--导航-->
+<nav class="attached segment m-padded-tb-mini m-shadow-small">
+    <div class="ui container">
+        <div class="ui secondary menu">
+            <h2 class="ui teal header item">管理博客</h2>
+            <a href="#" th:href="@{/admin/blogs}" class="active teal m-item item m-mobile-hide"><i class="home icon"></i>博客</a>
+            <a href="#" th:href="@{/admin/types/1/5}" class=" m-item item m-mobile-hide"><i class="idea icon"></i>分类</a>
+            <a href="#" th:href="@{/admin/tags/1/5}" class="m-item item m-mobile-hide"><i class="tags icon"></i>标签</a>
+            <a href="#" th:href="@{/}" class="m-item item m-mobile-hide"><i class="paper plane icon"></i>去首页</a>
+            <div class="right m-item m-mobile-hide menu">
+                <div class="ui dropdown  item">
+                    <div class="text">
+                        <img class="ui avatar image" src="https://unsplash.it/100/100?image=1005" th:src="@{${session.user.avatar}}">
+                        <p th:text="${session.user.nickName}"></p>
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a href="#" th:href="@{/admin/logout}"  class="item">注销</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="ui attached pointing menu">
+    <div class="ui container">
+        <div class="right menu">
+            <a href="#" th:href="@{/admin/blog}" class="item">发布</a>
+            <a href="#" th:href="@{/admin/blogs}" class="teal active item">列表</a>
+        </div>
+    </div>
+</div>
+
+<!--中间内容-->
+<div  class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+        <form action="#" th:action="@{/admin/blogs}" method="post" class="ui segment form">
+            <div class="inline fields">
+                <div class="field">
+                    <input type="text" name="title" placeholder="标题">
+                </div>
+                <input type="hidden" name="pageNum" value="1"/>
+                <div class="field">
+                    <div class="ui selection dropdown">
+                        <input type="hidden" name="type.id">
+                        <i class="dropdown icon"></i>
+                        <div class="default text">分类</div>
+                        <div class="menu type">
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" id="recommend" name="recommend">
+                        <label for="recommend">推荐</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <button id="search-btn" class="ui mini teal basic button"><i class="search icon"></i>搜索</button>
+
+                </div>
+            </div>
+        </form>
+        <div id="blogPage">
+
+            <table  th:fragment="blogPage" class="ui compact table blogPageInfo" >
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>标题</th>
+                    <th>博客类型</th>
+                    <th>分类</th>
+                    <th>推荐</th>
+                    <th>更新时间</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+
+                <tbody id="content">
+                <tr th:each="blog,status : ${blogPageInfo.list}">
+
+                    <td th:text="${status.index}">1</td>
+                    <td th:text="${blog.title}">刻意练习清单</td>
+                    <td th:text="${blog.flag}">认知升级</td>
+                    <td th:text="${blog.type}!=null?${blog.type.typeName}">认知升级</td>
+                    <td th:text="${blog.recommend}?'是':'否'">是</td>
+
+                    <td th:text="${#dates.format(blog.updateTime,'yyyy-MM-dd')}">2017-10-02 09:45</td>
+                    <td>
+                        <a href="#" th:href="@{/admin/blog/}+${blog.id}" class="ui mini teal basic button update">编辑</a>
+                        <a href="#" th:href="@{/admin/blog/}+${blog.id}"   class="ui mini red basic button delete">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+
+                    <th colspan="7">
+                        <div class="ui mini pagination menu">
+
+                            <button id="preBtn" pageNum="" th:pageNum="${blogPageInfo.pageNum-1}"
+                                    class="ui left attached button"
+                                    th:class="${blogPageInfo.hasPreviousPage}?'ui left attached button':'ui left attached button disabled '">
+                                上一页
+                            </button>
+
+                            <button id="nextBtn"pageNum="" th:pageNum="${blogPageInfo.pageNum+1}"
+                                    class="right attached ui button"
+                                    th:class="${blogPageInfo.hasNextPage}?'right attached ui button':'right attached ui button disabled '">
+                                下一页
+                            </button>
+
+                        </div>
+                        <a href="#" th:href="@{/admin/blog}" class="ui mini right floated teal basic button">新增</a>
+                    </th>
+                </tr>
+                </tfoot>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+<br>
+<br>
+<!--底部footer-->
+<footer class="ui inverted vertical segment m-padded-tb-massive">
+    <div class="ui center aligned container">
+        <div class="ui inverted divided stackable grid">
+            <div class="three wide column">
+
+            </div>
+            <div class="three wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced " >最新博客</h4>
+                <div class="ui inverted link list footerLatestBlog">
+
+                </div>
+            </div>
+            <div class="three wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced ">联系我</h4>
+                <div class="ui inverted link list">
+                    <a href="mailto:dumingxuancn@foxmail.com" class="item m-text-thin">Email：dumingxuancn@foxmail.com</a>
+                    <a href="tencent://message/?uin=1718905040&Site=&Menu=yes" class="item m-text-thin">QQ：1718905040</a>
+                </div>
+            </div>
+            <div class="seven wide column">
+                <h4 class="ui inverted header m-text-thin m-text-spaced ">Blog</h4>
+                <p class="m-text-thin m-text-spaced m-opacity-mini">这是我的个人博客、会记录学习过程出现的问题，希望可以给来到这儿的人有所帮助...</p>
+            </div>
+        </div>
+        <div class="ui inverted section divider"></div>
+        <p class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2020 - 2020 Matt Designed by Matt</p>
+    </div>
+
+</footer>
+
+<script src="https://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script th:inline="javascript">
+
+    $(function () {
+        $('.menu.toggle').click(function () {
+            $('.m-item').toggleClass('m-mobile-hide');
+        });
+
+        $('.ui.dropdown').dropdown({
+            on : 'hover'
+        });
+
+
+        /*<![CDATA[*/
+        var listLatestBlogUrl = [[@{/blogs/latest/3}]];
+        var toBlogPage = [[@{/blog/}]];
+        /*]]>*/
+
+        $.ajax({
+            type: "GET",
+            url: listLatestBlogUrl,
+            success: function(res){
+
+                var a = '<a href="#" class="item m-text-thin"></a>';
+                var blogList = res.data.newBlogList;
+                var i = 0;
+                for(i;i<res.data.newBlogList.length;i++){
+                    $('.footerLatestBlog').append($(a).attr("href",toBlogPage+blogList[i].id)
+                        .text(blogList[i].title));
+                }
+                initRecommendLatest(blogList);
+            }
+        });
+
+
+        /*<![CDATA[*/
+
+            var toBlogsPage = [[@{/admin/blogs}]];
+            var type = [[@{/admin/types/notPaging}]];
+        /*]]>*/
+
+
+        //初始化分类数据
+        $.ajax({
+            type: "GET",
+            url: type,
+            success: function(arg){
+
+                console.log(arg);
+                //<div class="item" data-value="1">错误日志</div>
+                var div = '<div class="item"></div>';
+                var i = 0;
+                var types = arg.data.types;
+                for(i;i<types.length;i++){
+                    $('.type').append($(div).attr('data-value',types[i].id)
+                        .text(types[i].typeName));
+                }
+
+            }
+        });
+
+
+
+        //给上一页下一页按钮绑定事件
+        function bindBtn() {
+            $("#preBtn").click(function () {
+
+
+
+                $('[name="pageNum"]').val($(this).attr("pageNum"));
+
+                search();
+            });
+
+            $("#nextBtn").click(function () {
+
+
+
+                $('[name="pageNum"]').val($(this).attr("pageNum"));
+
+                search();
+                //window.location.href=$(this).attr("pageNum");
+            });
+        }
+
+        function search(){
+
+
+                $.ajax({
+                    type: "POST",
+                    url: toBlogsPage,
+                    data:$("form").serialize(),
+                    dataType:"html",
+                    success: function(arg){
+
+                        console.log(arg);
+
+                        $('#blogPage').html(arg);
+                        bindBtn();
+
+                    }
+                });
+
+                return false;
+
+        }
+
+
+        $("#search-btn").click(function () {
+
+            $.ajax({
+                type: "POST",
+                url: toBlogsPage,
+                data:$("form").serialize(),
+                dataType:"html",
+                success: function(arg){
+
+
+
+                    $('#blogPage').html(arg);
+                    bindBtn();
+
+                }
+            });
+
+            return false;
+        });
+
+        $("#preBtn").click(function () {
+
+
+             $('[name="pageNum"]').val($(this).attr("pageNum"));
+
+            search();
+        });
+
+        $("#nextBtn").click(function () {
+
+
+
+            $('[name="pageNum"]').val($(this).attr("pageNum"));
+
+            search();
+            //window.location.href=$(this).attr("pageNum");
+        });
+
+
+
+        $('.delete').click(function () {
+            //alert($(this).attr('href'));
+            $.ajax({
+                type: "DELETE",
+                url: $(this).attr('href'),
+                data: '',
+                success: function(msg){
+                    window.location.href = toBlogsPage;
+                    deleteBtn();
+                }
+            });
+            return false;
+        });
+
+        function deleteBtn() {
+            $('.delete').click(function () {
+                //alert($(this).attr('href'));
+                $.ajax({
+                    type: "DELETE",
+                    url: $(this).attr('href'),
+                    data: '',
+                    success: function(msg){
+                        window.location.href = toBlogsPage;
+                    }
+                });
+                return false;
+            });
+        }
+
+
+
+
+
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

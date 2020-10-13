@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pavi.blog.mapper.CommentMapper">
+
+    <!--Integer saveCommentByBlogId(Comment comment);-->
+
+    <insert id="saveCommentByBlogId">
+        INSERT INTO `comment`
+        set parentid=#{parentId},nickName=#{nickName},email=#{email},
+        avatar=#{avatar},content=#{content},createTime=#{createTime},
+            blogId=#{blog.id}
+    </insert>
+
+    <!--Integer deleteCommentByBlogId(Long id);-->
+    <delete id="deleteCommentByBlogId">
+
+        DELETE FROM comment
+        WHERE blogId = #{blogId}
+    </delete>
+
+    <resultMap id="commentWithChildrenCommentList" type="com.pavi.blog.po.Comment">
+        <id column="pId" property="id"></id>
+
+        <result column="pPaentId" property="parentId"></result>
+        <result column="pNickName" property="nickName"></result>
+        <result column="pEmail" property="email"></result>
+        <result column="pAvatar" property="avatar"></result>
+        <result column="pContent" property="content"></result>
+        <result column="pCreateTime" property="createTime"></result>
+        <collection property="childrenCommentList" ofType="com.pavi.blog.po.Comment">
+            <id column="sId" property="id"></id>
+            <result column="sParentId" property="parentId"></result>
+            <result column="sNickName" property="nickName"></result>
+            <result column="sEmail" property="email"></result>
+            <result column="sAvatar" property="avatar"></result>
+            <result column="sContent" property="content"></result>
+            <result column="sCreatTime" property="createTime"></result>
+            <association property="parentComment" javaType="com.pavi.blog.po.Comment">
+                <id column="pId" property="id"></id>
+                <result column="pPaentId" property="parentId"></result>
+                <result column="pNickName" property="nickName"></result>
+                <result column="pEmail" property="email"></result>
+                <result column="pAvatar" property="avatar"></result>
+                <result column="pContent" property="content"></result>
+                <result column="pCreateTime" property="createTime"></result>
+            </association>
+        </collection>
+    </resultMap>
+
+    <!--List<Comment> listCommentWithChildrenCommentList(Long blogId);-->
+    <select id="listCommentWithChildrenCommentList" resultMap="commentWithChildrenCommentList">
+       SELECT commentParent.id pId,commentParent.parentId pPaentId,commentParent.nickName pNickName,
+            commentParent.email pEmail,commentParent.avatar pAvatar,commentParent.content pContent,
+            commentParent.createTime pCreateTime,
+            commentSon.id sId,commentSon.parentId sParentId,commentSon.nickName sNickName,
+            commentSon.email sEmail,commentSon.avatar sAvatar,commentSon.content sContent,
+            commentSon.createTime sCreatTime
+        FROM `comment` commentParent
+        LEFT JOIN comment commentSon
+        ON commentParent.id = commentSon.parentId
+        WHERE commentParent.blogid=#{blogId} and commentSon.blogid = #{blogId}
+    </select>
+
+
+
+
+    <!--List<Comment> listCommentByBlogId(Long blogId);-->
+    <select id="listCommentByBlogId" resultType="com.pavi.blog.po.Comment">
+       SELECT id,parentId ,nickName,email,avatar,content,createTime
+        FROM `comment`
+        WHERE blogid=#{blogId} and parentId is null
+    </select>
+
+
+
+
+
+    <!--List<Comment> listCommentByIdAndParentId(Long parentId);-->
+    <select id="listCommentByIdAndParentId" resultType="com.pavi.blog.po.Comment">
+       SELECT id,parentId,nickName,email,avatar,content,createTime
+        FROM `comment`
+        <where>
+            <if test="parentId==null">
+                and parentId is null
+            </if>
+            <if test="parentId!=null">
+                and parentId = #{parentId}
+            </if>
+            <if test="1==1">
+                and blogId=#{blogId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

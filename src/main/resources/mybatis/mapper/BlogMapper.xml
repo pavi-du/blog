@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pavi.blog.mapper.BlogMapper">
+
+
+    <resultMap id="blogWithType" type="com.pavi.blog.po.Blog">
+        <id column="blogId" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="flag" property="flag"></result>
+        <result column="firstPicture" property="firstPicture"></result>
+        <result column="content" property="content"></result>
+        <result column="views" property="views"></result>
+        <result column="description" property="description"></result>
+        <result column="appreciate" property="appreciate"></result>
+        <result column="reproducedStatement" property="reproducedStatement"></result>
+        <result column="recommend" property="recommend"></result>
+        <result column="comment" property="comment"></result>
+        <result column="publish" property="publish"></result>
+        <result column="createTime" property="createTime"></result>
+        <result column="updateTime" property="updateTime"></result>
+        <association property="type" javaType="com.pavi.blog.po.Type">
+            <id column="tid" property="id"></id>
+            <result column="typeName" property="typeName"></result>
+        </association>
+    </resultMap>
+
+
+
+    <resultMap id="blogWithTypeWithUser" type="com.pavi.blog.po.Blog">
+        <id column="blogId" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="flag" property="flag"></result>
+        <result column="firstPicture" property="firstPicture"></result>
+        <result column="content" property="content"></result>
+        <result column="views" property="views"></result>
+        <result column="description" property="description"></result>
+        <result column="appreciate" property="appreciate"></result>
+        <result column="reproducedStatement" property="reproducedStatement"></result>
+        <result column="recommend" property="recommend"></result>
+        <result column="comment" property="comment"></result>
+        <result column="publish" property="publish"></result>
+        <result column="blogCreateTime" property="createTime"></result>
+        <result column="blogUpdateTime" property="updateTime"></result>
+        <association property="type" javaType="com.pavi.blog.po.Type">
+            <id column="typeId" property="id"></id>
+            <result column="typeName" property="typeName"></result>
+        </association>
+        <association property="user" javaType="com.pavi.blog.po.User">
+            <id column="userId" property="id"></id>
+            <result column="userNickName" property="nickName"></result>
+            <result column="avatar" property="avatar"></result>
+        </association>
+    </resultMap>
+
+    <!--blogWithTagWithTypeWithUser-->
+    <resultMap id="blogWithTagWithTypeWithUser" type="com.pavi.blog.po.Blog">
+        <id column="blogId" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="flag" property="flag"></result>
+        <result column="firstPicture" property="firstPicture"></result>
+        <result column="content" property="content"></result>
+        <result column="views" property="views"></result>
+        <result column="description" property="description"></result>
+        <result column="appreciate" property="appreciate"></result>
+        <result column="reproducedStatement" property="reproducedStatement"></result>
+        <result column="recommend" property="recommend"></result>
+        <result column="comment" property="comment"></result>
+        <result column="publish" property="publish"></result>
+        <result column="blogCreateTime" property="createTime"></result>
+        <result column="blogUpdateTime" property="updateTime"></result>
+
+        <association property="type" javaType="com.pavi.blog.po.Type">
+            <id column="typeId" property="id"></id>
+            <result column="typeName" property="typeName"></result>
+        </association>
+        <association property="user" javaType="com.pavi.blog.po.User">
+            <id column="userId" property="id"></id>
+            <result column="userNickName" property="nickName"></result>
+            <result column="avatar" property="avatar"></result>
+        </association>
+
+        <collection property="tagList" ofType="com.pavi.blog.po.Tag">
+            <id property="id" column="tagId"></id>
+            <result column="tagName" property="tagName"></result>
+        </collection>
+    </resultMap>
+
+    <!--void saveBlog(Blog blog);-->
+    <insert id="saveBlog" useGeneratedKeys="true" keyProperty="id" >
+        insert into blog(title, content, firstpicture, flag, views, appreciate,
+                 reproducedstatement, recommend, publish, comment,
+                 description,createtime, updatetime, userid, typeid)
+        values (#{title},#{content},#{firstPicture},#{flag},#{views},#{appreciate},
+                #{reproducedStatement},#{recommend},#{publish},#{comment},
+                #{description},#{createTime},#{updateTime},#{user.id},#{type.id});
+    </insert>
+
+    <!--void deleteBlogById(Long id);-->
+    <delete id="deleteBlogById">
+        delete from blog
+        where id = #{id};
+    </delete>
+
+
+
+    <!--void updateBlogById(Blog blog);-->
+    <update id="updateBlogById">
+
+        UPDATE blog
+        set title=#{title},flag=#{flag},content=#{content},firstpicture=#{firstPicture},
+        description=#{description},views=#{views},appreciate=#{appreciate},reproducedStatement=#{reproducedStatement},
+        recommend=#{recommend},publish=#{publish},comment=#{comment},updatetime=#{updateTime},typeid = #{type.id}
+        where id = #{id}
+
+    </update>
+
+    <!--Blog getBlogByIdWithTagWithTypeWithUser(Long id);-->
+    <select id="getBlogByIdWithTagWithTypeWithUser" resultMap="blogWithTagWithTypeWithUser">
+       SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime bCreateTime,blog.updateTime blogUpdateTime,
+        tag.id tagId,tag.tagName tagName,
+        type.id typeId,type.typeName typeName,
+        user.id userId,user.nickName userNickName,avatar
+        FROM blog
+        LEFT JOIN blogtag
+        ON blog.id = blogtag.blogId
+        LEFT JOIN tag
+        ON blogtag.tagId = tag.id
+        LEFT JOIN type
+        ON type.id = blog.typeId
+        LEFT JOIN `user`
+        ON user.id = blog.userId
+
+        WHERE blog.id = #{id}
+    </select>
+
+
+    <!--List<Blog> listBlogByBlog(Blog blog);-->
+    <select id="listBlogByBlogWithTypeWithUser" resultMap="blogWithTypeWithUser">
+        SELECT blog.id blogId,TITLE,description,CONTENT,FIRSTPICTURE,FLAG,VIEWS,appreciate,reproducedStatement,
+        recommend,publish,comment,blog.updateTime blogUpdateTime,type.id typeId,TYPENAME,
+        user.id userId,user.nickName userNickName,avatar
+        from blog
+        left join type
+        on blog.TYPEID = type.id
+        LEFT JOIN user
+        ON user.id = blog.userId
+        <where>
+            <if test="title != null and title.trim() !=''">
+                and title like '%${title}%'
+            </if>
+            <if test="type != null and type.id != null">
+                and typeId = #{type.id}
+            </if>
+            <if test="recommend == true">
+                and recommend = #{recommend}
+            </if>
+        </where>
+        ORDER BY blog.updatetime desc
+
+    </select>
+
+
+    <!--List<Blog> listBlogWithTypeWithUser();-->
+    <select id="listBlogWithTypeWithUser" resultMap="blogWithTypeWithUser">
+        SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime blogCreateTime,blog.updateTime blogUpdateTime,type.id typeId,typeName,
+        user.id userId,user.nickName userNickName,avatar
+        from blog
+        left join type
+        on blog.typeId = type.id
+        left join user
+        on blog.userId = user.id
+    </select>
+
+
+    <!--List<Blog> listBlogByTypeIdWithTypeWithUser(Long typeId);-->
+    <select id="listBlogByTypeIdWithTypeWithUser" resultMap="blogWithTypeWithUser">
+        SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime bCreateTime,blog.updateTime blogUpdateTime,type.id typeId,typeName,
+        user.id userId,user.nickName userNickName,avatar
+        from blog
+        left join type
+        on blog.typeid = type.id
+        left join user
+        on blog.userId = user.id
+        WHERE blog.typeId = #{typeId}
+    </select>
+
+
+    <!--List<Blog> listBlogByTagIdByPagingWithTypeWithUserWithTag(Long tagId);-->
+    <select id="listBlogByTagIdByPagingWithTypeWithUserWithTag" resultMap="blogWithTagWithTypeWithUser">
+        SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime bCreateTime,blog.updateTime blogUpdateTime,
+        tag.id tagId,tag.tagName tagName,
+        type.id typeId,type.typeName typeName,
+        user.id userId,user.nickName userNickName,avatar
+        FROM blog
+        LEFT JOIN blogtag
+        ON blog.id = blogtag.blogId
+        LEFT JOIN tag
+        ON blogtag.tagId = tag.id
+        LEFT JOIN type
+        ON type.id = blog.typeId
+        LEFT JOIN `user`
+        ON user.id = blog.userId
+        where tagId = #{tagId}
+    </select>
+
+
+    <!--List<Blog> listBlogByPagingWithTypeWithUserWithTag();-->
+    <select id="listBlogByPagingWithTypeWithUserWithTag" resultMap="blogWithTagWithTypeWithUser">
+        SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime bCreateTime,blog.updateTime blogUpdateTime,
+        tag.id tagId,tag.tagName tagName,
+        type.id typeId,type.typeName typeName,
+        user.id userId,user.nickName userNickName,avatar
+        FROM blog
+        LEFT JOIN blogtag
+        ON blog.id = blogtag.blogId
+        LEFT JOIN tag
+        ON blogtag.tagId = tag.id
+        LEFT JOIN type
+        ON type.id = blog.typeId
+        LEFT JOIN `user`
+        ON user.id = blog.userId
+    </select>
+
+    <!--List<Blog> listLatestBlog();-->
+    <select id="listLatestBlog" resultType="com.pavi.blog.po.Blog">
+        SELECT id,title
+        from blog
+        ORDER BY updateTime DESC
+    </select>
+
+
+    <!--List<Integer> listBlogOfYear();-->
+    <select id="listBlogOfYear" resultType="int">
+        select distinct year(updateTime)
+        from blog
+        ORDER BY updateTime DESC
+    </select>
+
+    <!--List<Blog> listBlogByYear(Integer year);-->
+    <select id="listBlogByYear" resultType="com.pavi.blog.po.Blog">
+        SELECT id,title,flag,updateTime
+        FROM blog
+        WHERE year(updateTime) = #{year}
+    </select>
+
+
+    <!--List<Blog> listBlogBySearchContentWithTagWithTypeWithUser();-->
+    <select id="listBlogBySearchContentWithTagWithTypeWithUser" resultMap="blogWithTagWithTypeWithUser">
+        SELECT blog.id blogId,title,flag,firstPicture,content,views,description,
+        appreciate,reproducedStatement,recommend,comment,
+        publish,blog.createTime bCreateTime,blog.updateTime blogUpdateTime,
+        tag.id tagId,tag.tagName tagName,
+        type.id typeId,type.typeName typeName,
+        user.id userId,user.nickName userNickName,avatar
+        FROM blog
+        LEFT JOIN blogtag
+        ON blog.id = blogtag.blogId
+        LEFT JOIN tag
+        ON blogtag.tagId = tag.id
+        LEFT JOIN type
+        ON type.id = blog.typeId
+        LEFT JOIN `user`
+        ON user.id = blog.userId
+        WHERE title like '%${searchContent}%'
+        OR content like '%${searchContent}%'
+        OR description like '%${searchContent}%'
+    </select>
+
+    <!--List<Blog> listBlogRecommendLatest();-->
+    <select id="listBlogRecommendLatest" resultType="com.pavi.blog.po.Blog">
+        SELECT id,title
+        FROM blog
+        WHERE recommend = 1
+        ORDER BY updateTime
+    </select>
+</mapper>
